@@ -89,3 +89,78 @@ furnishingstatus= st.selectbox(
     "Furnishing Status",
     ["furnished", "semi-furnished", "unfurnished"]
 )
+
+# Collect all user inputs
+
+input_data = {
+    "area": area,
+    "bedrooms": bedrooms,
+    "stories": stories,
+    "parking": parking,
+    "mainroad": mainroad,
+    "guestroom": guestroom,
+    "bathrooms": bathroom,
+    "basement": basement,
+    "hotwaterheating": hotwaterheating,
+    "airconditioning": airconditioning,
+    "prefarea": prefarea,
+    "furnishingstatus": furnishingstatus
+}
+
+input_df= pd.DataFrame([input_data])
+
+# convert yes/no into 1/0
+binary_columns= [
+    "mainroad",
+    "guestroom",
+    "basement",
+    "hotwaterheating",
+    "airconditioning",
+    "prefarea"
+]
+
+for col in binary_columns:
+    input_df[col] = input_df[col].map({
+        "yes": 1,
+        "no": 0
+    })
+
+# Step 4: Apply One-Hot Encoding
+
+input_df = pd.get_dummies(
+    input_df,
+    columns=["furnishingstatus"]
+)
+
+# Step 5: Match training feature columns
+
+input_df = input_df.reindex(
+    columns=features,
+    fill_value=0
+)
+
+# Display prepared data
+
+st.subheader("Prepared Input Data")
+st.write(input_df)
+
+
+# Step 6: Make House Price Prediction
+
+if st.button("Predict House Price"):
+
+    # 1. Scale the user input
+    scaled_input = scaler.transform(input_df)
+
+    # 2. Predict the house price
+    prediction = model.predict(scaled_input)
+
+    # 3. Extract the predicted value
+    predicted_price = prediction[0]
+
+    # 4. Display the result
+    st.success("House Price Predicted Successfully!")
+
+    st.subheader("Estimated House Price")
+
+    st.title(f"₹ {predicted_price:,.2f}")

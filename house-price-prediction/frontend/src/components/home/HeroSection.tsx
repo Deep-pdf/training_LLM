@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDownRight, Cpu, Layers } from "lucide-react";
+import BottomUpLetters from "@/components/ui/bottom-up-letters";
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -61,28 +62,24 @@ export default function HeroSection() {
             </span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="font-bebas text-teal-deep uppercase tracking-normal leading-[0.86] text-[clamp(3.6rem,9.4vw,168px)] whitespace-nowrap"
-          >
-            Predict your next
-          </motion.h1>
+          <h1 className="font-bebas text-teal-deep uppercase tracking-normal leading-[0.86] text-[clamp(3.6rem,9.4vw,168px)] whitespace-nowrap">
+            <BottomUpLetters delay={80} stagger={32}>
+              Predict your next
+            </BottomUpLetters>
+          </h1>
 
-          <motion.div
-            initial={{ opacity: 0, y: 34 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-start justify-end gap-3 lg:gap-4 w-full mt-[0.2vw]"
-          >
+          <div className="flex items-start justify-end gap-3 lg:gap-4 w-full mt-[0.2vw]">
             <span className="font-serif-display italic text-white text-shadow-dream text-[clamp(2.2rem,5.2vw,92px)] leading-[0.9] pt-[0.4vw] whitespace-nowrap">
-              Dream
+              <BottomUpLetters delay={360} stagger={45}>
+                Dream
+              </BottomUpLetters>
             </span>
             <span className="font-bebas text-white text-shadow-house uppercase tracking-normal leading-[0.84] text-[clamp(4.6rem,13.2vw,240px)] whitespace-nowrap text-right">
-              house price
+              <BottomUpLetters delay={480} stagger={35}>
+                house price
+              </BottomUpLetters>
             </span>
-          </motion.div>
+          </div>
         </div>
 
         {/* Mobile Layout (< md) */}
@@ -91,15 +88,23 @@ export default function HeroSection() {
             Property Valuation Engine
           </span>
           <h1 className="font-bebas text-teal-deep uppercase leading-[0.88] text-[clamp(2.8rem,14vw,64px)]">
-            Predict your
+            <BottomUpLetters delay={80} stagger={32}>
+              Predict your
+            </BottomUpLetters>
             <br />
-            next
+            <BottomUpLetters delay={260} stagger={40}>
+              next
+            </BottomUpLetters>
           </h1>
           <span className="font-serif-display italic text-white text-shadow-dream text-[clamp(2rem,9.5vw,44px)] leading-[0.95] mt-1">
-            Dream
+            <BottomUpLetters delay={380} stagger={45}>
+              Dream
+            </BottomUpLetters>
           </span>
           <span className="font-bebas text-white text-shadow-house uppercase leading-[0.84] text-[clamp(3.1rem,15.5vw,76px)] whitespace-nowrap">
-            house price
+            <BottomUpLetters delay={480} stagger={35}>
+              house price
+            </BottomUpLetters>
           </span>
         </div>
       </motion.div>

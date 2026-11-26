@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Reveal } from "@/components/ui/Reveal";
+import WordPullUp from "@/components/ui/word-pull-up";
 
 const TECH_SPECS = [
   { label: "ML Engine", value: "Python · Scikit-learn · Linear Regression" },
@@ -31,16 +32,20 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Editorial Column */}
           <div className="lg:col-span-7 flex flex-col">
-            <Reveal delay={0.05}>
-              <h2 className="font-bebas text-[clamp(3rem,6.5vw,5.75rem)] leading-[0.9] tracking-normal text-charcoal uppercase">
-                Data-driven{" "}
-                <span className="font-serif-display italic font-normal lowercase text-teal-deep tracking-tight">
-                  precision
-                </span>
-                <br />
-                for modern residential valuation
-              </h2>
-            </Reveal>
+            <h2 className="font-sans font-semibold text-[clamp(2.4rem,4.9vw,4.5rem)] leading-[1.06] tracking-tight text-charcoal">
+              <WordPullUp
+                segments={[
+                  { text: "Data-driven" },
+                  {
+                    text: "precision",
+                    className:
+                      "font-serif-display italic font-normal text-teal-deep text-[1.08em]",
+                    breakAfter: true,
+                  },
+                  { text: "for modern residential valuation" },
+                ]}
+              />
+            </h2>
 
             <Reveal delay={0.12}>
               <p className="mt-8 text-base sm:text-lg leading-relaxed text-charcoal/80 max-w-2xl">

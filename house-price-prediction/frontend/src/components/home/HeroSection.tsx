@@ -50,7 +50,7 @@ export default function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.65, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="flex items-center justify-between mb-1"
           >
             <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] font-semibold text-teal-deep/85">
@@ -63,19 +63,19 @@ export default function HeroSection() {
           </motion.div>
 
           <h1 className="font-bebas text-teal-deep uppercase tracking-normal leading-[0.86] text-[clamp(3.6rem,9.4vw,168px)] whitespace-nowrap">
-            <BottomUpLetters delay={80} stagger={32}>
+            <BottomUpLetters delay={550} stagger={32}>
               Predict your next
             </BottomUpLetters>
           </h1>
 
           <div className="flex items-start justify-end gap-3 lg:gap-4 w-full mt-[0.2vw]">
             <span className="font-serif-display italic text-white text-shadow-dream text-[clamp(2.2rem,5.2vw,92px)] leading-[0.9] pt-[0.4vw] whitespace-nowrap">
-              <BottomUpLetters delay={360} stagger={45}>
+              <BottomUpLetters delay={830} stagger={45}>
                 Dream
               </BottomUpLetters>
             </span>
             <span className="font-bebas text-white text-shadow-house uppercase tracking-normal leading-[0.84] text-[clamp(4.6rem,13.2vw,240px)] whitespace-nowrap text-right">
-              <BottomUpLetters delay={480} stagger={35}>
+              <BottomUpLetters delay={950} stagger={35}>
                 house price
               </BottomUpLetters>
             </span>
@@ -88,33 +88,33 @@ export default function HeroSection() {
             Property Valuation Engine
           </span>
           <h1 className="font-bebas text-teal-deep uppercase leading-[0.88] text-[clamp(2.8rem,14vw,64px)]">
-            <BottomUpLetters delay={80} stagger={32}>
+            <BottomUpLetters delay={550} stagger={32}>
               Predict your
             </BottomUpLetters>
             <br />
-            <BottomUpLetters delay={260} stagger={40}>
+            <BottomUpLetters delay={730} stagger={40}>
               next
             </BottomUpLetters>
           </h1>
           <span className="font-serif-display italic text-white text-shadow-dream text-[clamp(2rem,9.5vw,44px)] leading-[0.95] mt-1">
-            <BottomUpLetters delay={380} stagger={45}>
+            <BottomUpLetters delay={850} stagger={45}>
               Dream
             </BottomUpLetters>
           </span>
           <span className="font-bebas text-white text-shadow-house uppercase leading-[0.84] text-[clamp(3.1rem,15.5vw,76px)] whitespace-nowrap">
-            <BottomUpLetters delay={480} stagger={35}>
+            <BottomUpLetters delay={950} stagger={35}>
               house price
             </BottomUpLetters>
           </span>
         </div>
       </motion.div>
 
-      {/* Foreground Architecture Cutout Layer (z-20: cropped at bottom & shifted down so text stays clearly visible) */}
+      {/* Foreground Architecture Cutout Layer (z-20: rises from below first on load) */}
       <motion.div
         style={{ y: mansionY }}
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 64 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.75, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-x-0 -bottom-[5%] sm:-bottom-[6%] md:-bottom-[8%] z-20 pointer-events-none h-[68%] sm:h-[74%] md:h-[94%] w-full"
       >
         <Image

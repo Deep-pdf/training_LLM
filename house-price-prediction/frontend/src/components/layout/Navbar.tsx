@@ -32,7 +32,7 @@ export default function Navbar() {
     }
     const timer = window.setTimeout(() => {
       setExpanded(true);
-    }, 450);
+    }, 1150);
     return () => window.clearTimeout(timer);
   }, [shouldReduceMotion]);
 
@@ -96,7 +96,7 @@ export default function Navbar() {
             : { width: 52, opacity: 1, scale: 1 }
         }
         transition={{
-          duration: shouldReduceMotion ? 0 : 0.72,
+          duration: shouldReduceMotion ? 0 : 1.05,
           ease: [0.22, 1, 0.36, 1],
         }}
         className={`mx-auto max-w-7xl overflow-hidden flex items-center transition-colors duration-300 rounded-full h-[52px] ${
@@ -138,7 +138,7 @@ export default function Navbar() {
             <motion.span
               initial={shouldReduceMotion ? false : { opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.55, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="font-bebas tracking-wider text-xl sm:text-2xl text-charcoal leading-none pt-0.5 pr-2 whitespace-nowrap"
             >
               Predict<span className="text-teal-deep">House</span>
@@ -151,7 +151,7 @@ export default function Navbar() {
           <motion.ul
             initial={shouldReduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.45, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.55, delay: 0.42, ease: [0.22, 1, 0.36, 1] }}
             className="hidden md:flex items-center gap-1 lg:gap-2"
           >
             {NAV_ITEMS.map((item) => {
@@ -190,7 +190,7 @@ export default function Navbar() {
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, x: 6 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.55, delay: 0.48, ease: [0.22, 1, 0.36, 1] }}
             className="flex items-center gap-2 shrink-0"
           >
             <a

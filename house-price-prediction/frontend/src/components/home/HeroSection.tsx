@@ -74,12 +74,12 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 34 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-start justify-between w-full mt-[0.2vw]"
+            className="flex items-start justify-end gap-3 lg:gap-4 w-full mt-[0.2vw]"
           >
-            <span className="font-serif-display italic text-white text-shadow-dream text-[clamp(2.2rem,5.2vw,92px)] leading-[0.9] pl-[4.5vw] pt-[0.4vw] whitespace-nowrap">
+            <span className="font-serif-display italic text-white text-shadow-dream text-[clamp(2.2rem,5.2vw,92px)] leading-[0.9] pt-[0.4vw] whitespace-nowrap">
               Dream
             </span>
-            <span className="font-bebas text-white text-shadow-house uppercase tracking-normal leading-[0.84] text-[clamp(4.6rem,13.2vw,240px)] whitespace-nowrap text-right flex-1 pl-4">
+            <span className="font-bebas text-white text-shadow-house uppercase tracking-normal leading-[0.84] text-[clamp(4.6rem,13.2vw,240px)] whitespace-nowrap text-right">
               house price
             </span>
           </motion.div>
@@ -104,13 +104,13 @@ export default function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Foreground Architecture Cutout Layer (z-20: overlaps bottom of text) */}
+      {/* Foreground Architecture Cutout Layer (z-20: cropped at bottom & shifted down so text stays clearly visible) */}
       <motion.div
         style={{ y: mansionY }}
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-x-0 bottom-0 z-20 pointer-events-none h-[64%] sm:h-[70%] md:h-[94%] w-full"
+        className="absolute inset-x-0 -bottom-[5%] sm:-bottom-[6%] md:-bottom-[8%] z-20 pointer-events-none h-[68%] sm:h-[74%] md:h-[94%] w-full"
       >
         <Image
           src="/images/mansion-cutout.png"

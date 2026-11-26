@@ -9,6 +9,8 @@ scaler= jb.load("models/scaler.pkl")
 
 features= jb.load("models/features.pkl")
 
+metrics = jb.load("models/metrics.pkl")
+
 #Display information
 
 st.title("House Prediction Model")
@@ -16,6 +18,7 @@ st.write("House Price Prediction Application")
 st.write("Model loaded Successfully")
 
 st.header("Enter house Price")
+
 
 #Numerical inputs
 area= st.number_input(
@@ -164,3 +167,12 @@ if st.button("Predict House Price"):
     st.subheader("Estimated House Price")
 
     st.title(f"₹ {predicted_price:,.2f}")
+
+
+    st.header("Model Performance")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("R² Score", f"{metrics['R2 Score']:.2%}")
+    col2.metric("MAE", f"₹ {metrics['MAE']:,.2f}")
+    col3.metric("RMSE", f"₹ {metrics['RMSE']:,.2f}")

@@ -25,7 +25,7 @@ export default function HeroSection() {
     <section
       ref={sectionRef}
       id="home"
-      className="relative w-full h-[100dvh] min-h-[680px] max-h-[1180px] overflow-hidden select-none flex flex-col justify-between pt-20 sm:pt-24"
+      className="sticky top-0 z-0 w-full h-[100dvh] min-h-[680px] max-h-[1180px] overflow-hidden select-none flex flex-col justify-between pt-20 sm:pt-24"
     >
       {/* Background Sky Image */}
       <div className="absolute inset-0 z-0">

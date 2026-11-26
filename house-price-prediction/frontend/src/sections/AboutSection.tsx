@@ -15,7 +15,7 @@ export default function AboutSection() {
   return (
     <section
       id="about"
-      className="relative bg-alabaster bg-arch-grid text-charcoal py-24 sm:py-32 px-4 sm:px-8 border-t border-soft-grey overflow-hidden"
+      className="relative z-10 bg-alabaster bg-arch-grid text-charcoal py-24 sm:py-32 px-4 sm:px-8 rounded-t-2xl sm:rounded-t-3xl shadow-[0_-24px_60px_rgba(0,0,0,0.22)] overflow-hidden"
     >
       <div className="mx-auto max-w-7xl">
         {/* Top Editorial Eyebrow */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
 interface NavItem {
@@ -22,6 +22,19 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeId, setActiveId] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setExpanded(true);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setExpanded(true);
+    }, 450);
+    return () => window.clearTimeout(timer);
+  }, [shouldReduceMotion]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -70,9 +83,27 @@ export default function Navbar() {
           : "py-4 sm:py-5 px-4 sm:px-8"
       }`}
     >
-      <nav
+      <motion.nav
         aria-label="Main navigation"
-        className={`mx-auto max-w-7xl flex items-center justify-between transition-all duration-300 rounded-full px-4 sm:px-6 py-2.5 ${
+        initial={
+          shouldReduceMotion
+            ? false
+            : { width: 52, opacity: 0, scale: 0.85 }
+        }
+        animate={
+          expanded || shouldReduceMotion
+            ? { width: "100%", opacity: 1, scale: 1 }
+            : { width: 52, opacity: 1, scale: 1 }
+        }
+        transition={{
+          duration: shouldReduceMotion ? 0 : 0.72,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className={`mx-auto max-w-7xl overflow-hidden flex items-center transition-colors duration-300 rounded-full h-[52px] ${
+          expanded || shouldReduceMotion
+            ? "justify-between px-4 sm:px-6"
+            : "justify-center px-0"
+        } ${
           scrolled
             ? "bg-alabaster/90 backdrop-blur-md border border-soft-grey shadow-[0_8px_30px_rgba(0,57,72,0.08)]"
             : "bg-alabaster/65 backdrop-blur-sm border border-white/40"
@@ -85,9 +116,9 @@ export default function Navbar() {
             e.preventDefault();
             handleNavClick("#home");
           }}
-          className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-deep rounded-full pr-2"
+          className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-deep rounded-full shrink-0"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-deep text-alabaster transition-transform duration-300 group-hover:scale-105">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-deep text-alabaster transition-transform duration-300 group-hover:scale-105 shrink-0">
             <svg
               width="16"
               height="16"
@@ -103,68 +134,89 @@ export default function Navbar() {
               <path d="M10 20v-6h4v6" />
             </svg>
           </span>
-          <span className="font-bebas tracking-wider text-xl sm:text-2xl text-charcoal leading-none pt-0.5">
-            Predict<span className="text-teal-deep">House</span>
-          </span>
+          {(expanded || shouldReduceMotion) && (
+            <motion.span
+              initial={shouldReduceMotion ? false : { opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="font-bebas tracking-wider text-xl sm:text-2xl text-charcoal leading-none pt-0.5 pr-2 whitespace-nowrap"
+            >
+              Predict<span className="text-teal-deep">House</span>
+            </motion.span>
+          )}
         </a>
 
         {/* Desktop Links */}
-        <ul className="hidden md:flex items-center gap-1 lg:gap-2">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeId === item.id;
-            return (
-              <li key={item.id}>
-                <a
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(item.href);
-                  }}
-                  className={`relative px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
-                    isActive
-                      ? "text-teal-deep font-semibold"
-                      : "text-charcoal/75 hover:text-charcoal"
-                  }`}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="nav-active-pill"
-                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                      className="absolute inset-0 rounded-full bg-teal-deep/10 -z-10"
-                    />
-                  )}
-                  {item.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
+        {(expanded || shouldReduceMotion) && (
+          <motion.ul
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.45, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden md:flex items-center gap-1 lg:gap-2"
+          >
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeId === item.id;
+              return (
+                <li key={item.id}>
+                  <a
+                    href={item.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick(item.href);
+                    }}
+                    className={`relative px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 whitespace-nowrap ${
+                      isActive
+                        ? "text-teal-deep font-semibold"
+                        : "text-charcoal/75 hover:text-charcoal"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-active-pill"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 rounded-full bg-teal-deep/10 -z-10"
+                      />
+                    )}
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })}
+          </motion.ul>
+        )}
 
         {/* Primary CTA + Mobile Toggle */}
-        <div className="flex items-center gap-2">
-          <a
-            href="#prediction"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavClick("#prediction");
-            }}
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-teal-deep px-4 py-2 text-xs sm:text-sm font-medium text-alabaster transition-all duration-200 hover:bg-charcoal hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-deep"
+        {(expanded || shouldReduceMotion) && (
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, x: 6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-2 shrink-0"
           >
-            <span>Estimate Value</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </a>
+            <a
+              href="#prediction"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick("#prediction");
+              }}
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-teal-deep px-4 py-2 text-xs sm:text-sm font-medium text-alabaster transition-all duration-200 hover:bg-charcoal hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-deep whitespace-nowrap"
+            >
+              <span>Estimate Value</span>
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            </a>
 
-          <button
-            type="button"
-            onClick={() => setMobileOpen((prev) => !prev)}
-            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={mobileOpen}
-            className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full bg-charcoal/5 text-charcoal hover:bg-charcoal/10 transition-colors"
-          >
-            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
-        </div>
-      </nav>
+            <button
+              type="button"
+              onClick={() => setMobileOpen((prev) => !prev)}
+              aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={mobileOpen}
+              className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full bg-charcoal/5 text-charcoal hover:bg-charcoal/10 transition-colors"
+            >
+              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </motion.div>
+        )}
+      </motion.nav>
 
       {/* Mobile Drawer */}
       <AnimatePresence>

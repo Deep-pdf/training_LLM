@@ -3,6 +3,7 @@ import type {
   ModelMetrics,
   PredictionRequest,
   PredictionResponse,
+  RootResponse,
 } from "@/types/prediction";
 
 const API_BASE_URL =
@@ -23,6 +24,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return response.json() as Promise<T>;
+}
+
+export function getRoot(): Promise<RootResponse> {
+  return request<RootResponse>("/");
 }
 
 export function getHealth(): Promise<HealthResponse> {

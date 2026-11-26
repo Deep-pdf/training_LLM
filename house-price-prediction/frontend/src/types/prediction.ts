@@ -19,16 +19,22 @@ export interface PredictionRequest {
 
 export interface ModelMetrics {
   model_name: string;
+  r2_score: number;
   mae: number;
   mse: number;
   rmse: number;
-  r2_score: number;
 }
 
 export interface PredictionResponse {
   predicted_price: number;
   currency: string;
-  metrics: ModelMetrics;
+}
+
+export interface RootResponse {
+  status: string;
+  message: string;
+  version: string;
+  docs_url: string;
 }
 
 export interface HealthResponse {

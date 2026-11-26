@@ -234,12 +234,12 @@ export default function PredictionSection() {
                       type="number"
                       min={1}
                       max={100000}
-                      step={50}
-                      value={form.area}
+                      step="any"
+                      value={form.area || ""}
                       onChange={(e) =>
                         setForm((prev) => ({
                           ...prev,
-                          area: Number(e.target.value),
+                          area: e.target.value === "" ? 0 : Number(e.target.value),
                         }))
                       }
                       className="w-24 bg-transparent text-right font-bebas text-2xl text-charcoal focus:outline-none"

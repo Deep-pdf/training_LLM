@@ -88,7 +88,7 @@ export default function HowItWorksSection() {
 
       if (fitsInViewport) {
         const enteredViewport =
-          rect.top <= vh * 0.75 && rect.bottom >= vh * 0.25;
+          rect.bottom <= vh - 24 && rect.bottom >= vh * 0.25;
 
         if (enteredViewport) {
           setRevealedCount((prev) => (prev === 0 ? 1 : prev));
@@ -125,7 +125,7 @@ export default function HowItWorksSection() {
           }
         }
       },
-      { threshold: [0.15, 0.35, 0.55] }
+      { threshold: [0.15, 0.35, 0.55, 0.85, 1] }
     );
 
     observer.observe(gridEl);
@@ -355,11 +355,11 @@ export default function HowItWorksSection() {
                   shouldReduceMotion
                     ? { duration: 0 }
                     : {
-                        type: "spring",
-                        stiffness: 290,
-                        damping: 19,
-                        mass: 0.85,
-                      }
+                      type: "spring",
+                      stiffness: 290,
+                      damping: 19,
+                      mass: 0.85,
+                    }
                 }
                 className="rounded-xl border border-white/12 p-6 sm:p-7 flex flex-col justify-between bg-white/[0.015] hover:bg-white/[0.04] transition-colors"
               >

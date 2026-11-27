@@ -83,11 +83,11 @@ export default function HeroSection() {
         </div>
 
         {/* Mobile Layout (< md) */}
-        <div className="flex md:hidden flex-col w-full px-6 pt-4">
+        <div className="flex md:hidden flex-col w-full px-5 sm:px-6 pt-3">
           <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-teal-deep/85 mb-2">
             Property Valuation Engine
           </span>
-          <h1 className="font-bebas text-teal-deep uppercase leading-[0.88] text-[clamp(2.8rem,14vw,64px)]">
+          <h1 className="font-bebas text-teal-deep uppercase leading-[0.85] text-[clamp(3.3rem,18vw,96px)]">
             <BottomUpLetters delay={550} stagger={32}>
               Predict your
             </BottomUpLetters>
@@ -96,12 +96,12 @@ export default function HeroSection() {
               next
             </BottomUpLetters>
           </h1>
-          <span className="font-serif-display italic text-white text-shadow-dream text-[clamp(2rem,9.5vw,44px)] leading-[0.95] mt-1">
+          <span className="font-serif-display italic text-white text-shadow-dream text-[clamp(2.4rem,12.5vw,64px)] leading-[0.92] mt-1">
             <BottomUpLetters delay={850} stagger={45}>
               Dream
             </BottomUpLetters>
           </span>
-          <span className="font-bebas text-white text-shadow-house uppercase leading-[0.84] text-[clamp(3.1rem,15.5vw,76px)] whitespace-nowrap">
+          <span className="font-bebas text-white text-shadow-house uppercase leading-[0.82] text-[clamp(3.75rem,20.5vw,112px)] whitespace-nowrap">
             <BottomUpLetters delay={950} stagger={35}>
               house price
             </BottomUpLetters>
@@ -115,7 +115,7 @@ export default function HeroSection() {
         initial={{ opacity: 0, y: 64 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.75, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-x-0 -bottom-[5%] sm:-bottom-[6%] md:-bottom-[8%] z-20 pointer-events-none h-[68%] sm:h-[74%] md:h-[94%] w-full"
+        className="absolute inset-x-0 -bottom-[5%] sm:-bottom-[6%] md:-bottom-[8%] z-20 pointer-events-none h-[84%] sm:h-[88%] md:h-[94%] w-full"
       >
         <Image
           src="/images/mansion-cutout.png"

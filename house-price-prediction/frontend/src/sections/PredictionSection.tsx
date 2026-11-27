@@ -216,12 +216,12 @@ export default function PredictionSection() {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
           {/* Left Form Column */}
-          <Reveal className="lg:col-span-7">
+          <Reveal className="lg:col-span-7 flex">
             <form
               onSubmit={handleSubmit}
-              className="rounded-3xl border border-soft-grey bg-white p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,57,72,0.06)]"
+              className="w-full rounded-3xl border border-soft-grey bg-white p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,57,72,0.06)]"
             >
               {/* Area Input + Slider */}
               <div className="pb-7 border-b border-soft-grey">
@@ -468,10 +468,10 @@ export default function PredictionSection() {
           </Reveal>
 
           {/* Right Architectural Showcase & Valuation Output */}
-          <Reveal delay={0.1} className="lg:col-span-5 lg:sticky lg:top-24">
-            <div className="rounded-3xl overflow-hidden border border-charcoal/15 bg-charcoal text-alabaster shadow-2xl">
+          <Reveal delay={0.1} className="lg:col-span-5 flex">
+            <div className="w-full flex flex-col rounded-3xl overflow-hidden border border-charcoal/15 bg-charcoal text-alabaster shadow-2xl">
               {/* Architectural Image Header */}
-              <div className="relative h-64 sm:h-72 w-full">
+              <div className="relative h-64 sm:h-72 lg:h-auto lg:flex-1 lg:min-h-[340px] w-full">
                 <Image
                   src="/images/villa-pool.jpg"
                   alt="Modern poolside villa"

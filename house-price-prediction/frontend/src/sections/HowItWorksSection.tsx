@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { useLenis } from "lenis/react";
 import { Reveal } from "@/components/ui/Reveal";
+import LetterFadeIn from "@/components/ui/letter-fade-in";
 import WordPullUp from "@/components/ui/word-pull-up";
 import { FALLBACK_MODEL_METRICS, fetchMetrics } from "@/lib/api";
 import { formatINR } from "@/lib/formatters";
@@ -42,16 +45,229 @@ const PIPELINE_STEPS = [
 export default function HowItWorksSection() {
   const [metrics, setMetrics] = useState<ModelMetrics>(FALLBACK_MODEL_METRICS);
   const [isLive, setIsLive] = useState<boolean | null>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const lenis = useLenis();
+
+  // One-time scroll-stepped reveal state for the 4 workflow cards (01 -> 04).
+  const [revealedCount, setRevealedCount] = useState(0);
+  const [hasCompleted, setHasCompleted] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+
+  const cardsGridRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const lastStepTimeRef = useRef(0);
+  const touchStartYRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setRevealedCount(PIPELINE_STEPS.length);
+      setHasCompleted(true);
+      setIsLocked(false);
+    }
+  }, [shouldReduceMotion]);
+
+  // Trigger card 01 when entering the How It Works cards grid.
+  useEffect(() => {
+    if (hasCompleted || shouldReduceMotion) return;
+    const gridEl = cardsGridRef.current;
+    if (!gridEl) return;
+
+    const checkEntry = () => {
+      const rect = gridEl.getBoundingClientRect();
+      const vh = window.innerHeight;
+
+      // If user already scrolled past the cards (e.g. jumped via #prediction), reveal all immediately.
+      if (rect.bottom < 80) {
+        setRevealedCount(PIPELINE_STEPS.length);
+        setHasCompleted(true);
+        setIsLocked(false);
+        return;
+      }
+
+      const fitsInViewport = rect.height <= vh * 0.92;
+
+      if (fitsInViewport) {
+        const enteredViewport =
+          rect.top <= vh * 0.75 && rect.bottom >= vh * 0.25;
+
+        if (enteredViewport) {
+          setRevealedCount((prev) => (prev === 0 ? 1 : prev));
+          setIsLocked(true);
+        }
+      } else {
+        // Narrow/mobile viewports where stacked cards exceed viewport height:
+        // reveal each card sequentially as it scrolls into view.
+        let nextCount = 0;
+        cardRefs.current.forEach((el, idx) => {
+          if (!el) return;
+          const cardRect = el.getBoundingClientRect();
+          if (cardRect.top <= vh * 0.82) {
+            nextCount = Math.max(nextCount, idx + 1);
+          }
+        });
+        if (nextCount > 0) {
+          setRevealedCount((prev) => {
+            const updated = Math.max(prev, nextCount);
+            if (updated >= PIPELINE_STEPS.length) {
+              setHasCompleted(true);
+            }
+            return updated;
+          });
+        }
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            checkEntry();
+          }
+        }
+      },
+      { threshold: [0.15, 0.35, 0.55] }
+    );
+
+    observer.observe(gridEl);
+    window.addEventListener("scroll", checkEntry, { passive: true });
+    checkEntry();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", checkEntry);
+    };
+  }, [hasCompleted, shouldReduceMotion]);
+
+  // Keep the page still while stepping through cards 01 -> 04 on scroll.
+  useEffect(() => {
+    if (!isLocked || hasCompleted || shouldReduceMotion) {
+      lenis?.start();
+      return;
+    }
+
+    lenis?.stop();
+
+    const STEP_COOLDOWN_MS = 420;
+
+    const advanceCard = () => {
+      const now = Date.now();
+      if (now - lastStepTimeRef.current < STEP_COOLDOWN_MS) return;
+      lastStepTimeRef.current = now;
+
+      setRevealedCount((prev) => {
+        const next = Math.min(PIPELINE_STEPS.length, prev + 1);
+        if (next >= PIPELINE_STEPS.length) {
+          // Brief pause so the 4th card lands before releasing scroll.
+          window.setTimeout(() => {
+            setHasCompleted(true);
+            setIsLocked(false);
+            lenis?.start();
+          }, 360);
+        }
+        return next;
+      });
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (Math.abs(e.deltaY) >= 6) {
+          advanceCard();
+        }
+      } else if (e.deltaY < 0) {
+        // Allow scrolling back up without trapping the user.
+        lenis?.start();
+        const rect = cardsGridRef.current?.getBoundingClientRect();
+        if (rect && rect.top > window.innerHeight * 0.75) {
+          setIsLocked(false);
+        }
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartYRef.current = e.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (touchStartYRef.current === null) return;
+      const currentY = e.touches[0]?.clientY ?? touchStartYRef.current;
+      const deltaY = touchStartYRef.current - currentY;
+
+      if (deltaY > 0) {
+        e.preventDefault();
+        if (deltaY >= 20) {
+          touchStartYRef.current = currentY;
+          advanceCard();
+        }
+      } else if (deltaY < -20) {
+        lenis?.start();
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === "ArrowDown" ||
+        e.key === "PageDown" ||
+        (e.key === " " && !e.shiftKey)
+      ) {
+        e.preventDefault();
+        advanceCard();
+      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+        lenis?.start();
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, {
+      passive: false,
+      capture: true,
+    });
+    window.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+      capture: true,
+    });
+    window.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+      capture: true,
+    });
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel, { capture: true });
+      window.removeEventListener("touchstart", handleTouchStart, {
+        capture: true,
+      });
+      window.removeEventListener("touchmove", handleTouchMove, {
+        capture: true,
+      });
+      window.removeEventListener("keydown", handleKeyDown, { capture: true });
+      lenis?.start();
+    };
+  }, [isLocked, hasCompleted, shouldReduceMotion, lenis]);
 
   useEffect(() => {
     let active = true;
-    fetchMetrics().then((res) => {
+    let timerId: number | undefined;
+    let attempts = 0;
+    const MAX_RETRIES = 12;
+
+    const load = async () => {
+      const res = await fetchMetrics();
       if (!active) return;
       setMetrics(res.metrics);
       setIsLive(res.isLive);
-    });
+
+      if (!res.isLive && attempts < MAX_RETRIES) {
+        attempts += 1;
+        timerId = window.setTimeout(load, 5000);
+      }
+    };
+
+    load();
+
     return () => {
       active = false;
+      if (timerId !== undefined) window.clearTimeout(timerId);
     };
   }, []);
 
@@ -111,37 +327,100 @@ export default function HowItWorksSection() {
         </Reveal>
 
         {/* 4-Stage Architectural Workflow */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t border-l border-white/12">
-          {PIPELINE_STEPS.map((item, idx) => (
-            <Reveal
-              key={item.step}
-              delay={idx * 0.07}
-              className="border-r border-b border-white/12 p-6 sm:p-7 flex flex-col justify-between bg-white/[0.015] hover:bg-white/[0.04] transition-colors"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <span className="font-bebas text-4xl text-sage leading-none">
-                    {item.step}
-                  </span>
-                  <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[11px] font-mono text-alabaster/75">
-                    {item.artifact}
-                  </span>
+        <div
+          ref={cardsGridRef}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5"
+        >
+          {PIPELINE_STEPS.map((item, idx) => {
+            const isRevealed = idx < revealedCount;
+            return (
+              <motion.div
+                key={item.step}
+                ref={(el) => {
+                  cardRefs.current[idx] = el;
+                }}
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 44 }
+                }
+                animate={
+                  isRevealed
+                    ? { opacity: 1, y: 0 }
+                    : shouldReduceMotion
+                      ? { opacity: 1, y: 0 }
+                      : { opacity: 0, y: 44 }
+                }
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : {
+                        type: "spring",
+                        stiffness: 290,
+                        damping: 19,
+                        mass: 0.85,
+                      }
+                }
+                className="rounded-xl border border-white/12 p-6 sm:p-7 flex flex-col justify-between bg-white/[0.015] hover:bg-white/[0.04] transition-colors"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="font-bebas text-4xl text-sage leading-none">
+                      <LetterFadeIn
+                        active={isRevealed}
+                        delay={0.08}
+                        stagger={0.025}
+                      >
+                        {item.step}
+                      </LetterFadeIn>
+                    </span>
+                    <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[11px] font-mono text-alabaster/75">
+                      <LetterFadeIn
+                        active={isRevealed}
+                        delay={0.1}
+                        stagger={0.015}
+                      >
+                        {item.artifact}
+                      </LetterFadeIn>
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2.5">
+                    <LetterFadeIn
+                      active={isRevealed}
+                      delay={0.14}
+                      stagger={0.014}
+                    >
+                      {item.title}
+                    </LetterFadeIn>
+                  </h3>
+                  <p className="text-sm text-alabaster/70 leading-relaxed">
+                    <LetterFadeIn
+                      active={isRevealed}
+                      delay={0.22}
+                      stagger={0.007}
+                      duration={0.35}
+                    >
+                      {item.detail}
+                    </LetterFadeIn>
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2.5">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-alabaster/70 leading-relaxed">
-                  {item.detail}
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] uppercase tracking-[0.16em] text-alabaster/45">
-                <span>Stage {item.step}</span>
-                {idx < PIPELINE_STEPS.length - 1 && (
-                  <ArrowRight className="h-3.5 w-3.5 text-sage/70 hidden lg:block" />
-                )}
-              </div>
-            </Reveal>
-          ))}
+                <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] uppercase tracking-[0.16em] text-alabaster/45">
+                  <span>
+                    <LetterFadeIn
+                      active={isRevealed}
+                      delay={0.28}
+                      stagger={0.016}
+                    >
+                      {`Stage ${item.step}`}
+                    </LetterFadeIn>
+                  </span>
+                  {idx < PIPELINE_STEPS.length - 1 && (
+                    <ArrowRight className="h-3.5 w-3.5 text-sage/70 hidden lg:block" />
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Model Performance Telemetry Band */}
@@ -162,16 +441,15 @@ export default function HowItWorksSection() {
             </div>
             <div className="inline-flex items-center gap-2 self-start sm:self-auto rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs">
               <Activity
-                className={`h-3.5 w-3.5 ${
-                  isLive ? "text-emerald-400" : "text-sage"
-                }`}
+                className={`h-3.5 w-3.5 ${isLive ? "text-emerald-400" : "text-sage"
+                  }`}
               />
               <span className="text-alabaster/80">
                 {isLive === true
                   ? "Live from FastAPI /metrics"
                   : isLive === false
-                  ? "Saved Baseline (Backend Offline)"
-                  : "Connecting to /metrics..."}
+                    ? "Saved Baseline (Backend Offline)"
+                    : "Connecting to /metrics..."}
               </span>
             </div>
           </div>

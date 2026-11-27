@@ -42,14 +42,33 @@ const QUICK_LINKS = [
 
 export default function FooterSection() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     let active = true;
-    fetchHealth().then((status) => {
-      if (active) setHealth(status);
-    });
+    let timerId: number | undefined;
+    let attempts = 0;
+    const MAX_RETRIES = 12;
+
+    const check = async () => {
+      const status = await fetchHealth();
+      if (!active) return;
+      setHealth(status);
+
+      if (status.status !== "healthy" && attempts < MAX_RETRIES) {
+        attempts += 1;
+        setRetrying(true);
+        timerId = window.setTimeout(check, 5000);
+      } else {
+        setRetrying(false);
+      }
+    };
+
+    check();
+
     return () => {
       active = false;
+      if (timerId !== undefined) window.clearTimeout(timerId);
     };
   }, []);
 
@@ -79,18 +98,25 @@ export default function FooterSection() {
 
           <div className="flex items-center gap-2.5 self-start md:self-auto rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs">
             <span
-              className={`h-2 w-2 rounded-full ${
-                health?.status === "healthy"
+              className={`h-2 w-2 rounded-full ${health?.status === "healthy"
                   ? "bg-emerald-400"
-                  : health?.status === "offline"
-                  ? "bg-amber-400"
-                  : "bg-sage"
-              }`}
+                  : retrying
+                    ? "bg-amber-400 animate-pulse"
+                    : health?.status === "offline"
+                      ? "bg-amber-400"
+                      : "bg-sage"
+                }`}
             />
             <span className="text-alabaster/80">
               Backend API:{" "}
               <strong className="text-white font-medium capitalize">
-                {health ? health.status : "checking"}
+                {health?.status === "healthy"
+                  ? "healthy"
+                  : retrying
+                    ? "waking up..."
+                    : health
+                      ? health.status
+                      : "checking"}
               </strong>
             </span>
           </div>

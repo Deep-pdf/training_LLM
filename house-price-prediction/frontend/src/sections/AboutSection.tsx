@@ -1,9 +1,11 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Reveal } from "@/components/ui/Reveal";
 import WordPullUp from "@/components/ui/word-pull-up";
+import { MagicText } from "@/components/ui/magic-text";
 
 const TECH_SPECS = [
   { label: "ML Engine", value: "Python · Scikit-learn · Linear Regression" },
@@ -13,6 +15,14 @@ const TECH_SPECS = [
 ];
 
 export default function AboutSection() {
+  const specsRef = useRef<HTMLDListElement>(null);
+  const { scrollYProgress: specsProgress } = useScroll({
+    target: specsRef,
+    offset: ["start 0.92", "start 0.58"],
+  });
+  const specsOpacity = useTransform(specsProgress, [0, 1], [0, 1]);
+  const specsY = useTransform(specsProgress, [0, 1], [20, 0]);
+
   return (
     <section
       id="about"
@@ -32,14 +42,14 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Editorial Column */}
           <div className="lg:col-span-7 flex flex-col">
-            <h2 className="font-sans font-semibold text-[clamp(2.4rem,4.9vw,4.5rem)] leading-[1.06] tracking-tight text-charcoal">
+            <h2 className="font-sans font-bold text-[clamp(2.4rem,4.9vw,4.5rem)] leading-[1.03] tracking-[-0.04em] text-charcoal">
               <WordPullUp
                 segments={[
                   { text: "Data-driven" },
                   {
                     text: "precision",
                     className:
-                      "font-serif-display italic font-normal text-teal-deep text-[1.08em]",
+                      "font-serif-display italic font-normal text-teal-deep text-[1.08em] tracking-[-0.02em]",
                     breakAfter: true,
                   },
                   { text: "for modern residential valuation" },
@@ -47,35 +57,31 @@ export default function AboutSection() {
               />
             </h2>
 
-            <Reveal delay={0.12}>
-              <p className="mt-8 text-base sm:text-lg leading-relaxed text-charcoal/80 max-w-2xl">
-                A Machine Learning-powered web application that predicts house
-                prices based on property features. Built using Python,
-                Scikit-learn, and Linear Regression, with a modern Next.js
-                frontend and FastAPI backend, the application provides real-time
-                price predictions and model performance insights through an
-                intuitive interface.
-              </p>
-            </Reveal>
+            <MagicText
+              className="mt-8 text-base sm:text-lg leading-relaxed text-charcoal/90 max-w-2xl font-medium"
+              text="A Machine Learning-powered web application that predicts house prices based on property features. Built using Python, Scikit-learn, and Linear Regression, with a modern Next.js frontend and FastAPI backend, the application provides real-time price predictions and model performance insights through an intuitive interface."
+            />
 
-            {/* Architectural Spec Ledger (replaces generic 3-card grids) */}
-            <Reveal delay={0.18}>
-              <dl className="mt-10 border-t border-charcoal/15 divide-y divide-charcoal/15">
-                {TECH_SPECS.map((spec) => (
-                  <div
-                    key={spec.label}
-                    className="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
-                  >
-                    <dt className="text-xs uppercase tracking-[0.18em] font-semibold text-teal-deep">
-                      {spec.label}
-                    </dt>
-                    <dd className="text-sm sm:text-base font-medium text-charcoal">
-                      {spec.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
+            {/* Architectural Spec Ledger (fades in on scroll after MagicText) */}
+            <motion.dl
+              ref={specsRef}
+              style={{ opacity: specsOpacity, y: specsY }}
+              className="mt-10 border-t border-charcoal/15 divide-y divide-charcoal/15"
+            >
+              {TECH_SPECS.map((spec) => (
+                <div
+                  key={spec.label}
+                  className="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
+                >
+                  <dt className="text-xs uppercase tracking-[0.18em] font-semibold text-teal-deep">
+                    {spec.label}
+                  </dt>
+                  <dd className="text-sm sm:text-base font-medium text-charcoal">
+                    {spec.value}
+                  </dd>
+                </div>
+              ))}
+            </motion.dl>
           </div>
 
           {/* Right Layered Architectural Collage */}
@@ -83,10 +89,16 @@ export default function AboutSection() {
             <div className="relative h-[440px] sm:h-[520px] w-full">
               {/* Primary Architectural Frame */}
               <motion.div
-                initial={{ opacity: 0, y: 28, rotate: -2 }}
-                whileInView={{ opacity: 1, y: 0, rotate: -2 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0, rotate: -2 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: -2 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 220,
+                  damping: 16,
+                  mass: 0.9,
+                  delay: 0.05,
+                }}
                 whileHover={{ rotate: 0, scale: 1.02 }}
                 className="absolute top-0 right-0 w-[82%] h-[62%] rounded-2xl overflow-hidden border-4 border-white shadow-[0_24px_60px_rgba(0,57,72,0.16)] bg-limestone z-10 transition-shadow"
               >
@@ -104,10 +116,16 @@ export default function AboutSection() {
 
               {/* Secondary Interior Frame */}
               <motion.div
-                initial={{ opacity: 0, y: 36, rotate: 3 }}
-                whileInView={{ opacity: 1, y: 0, rotate: 2.5 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.8, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0, rotate: 2.5 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: 2.5 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 220,
+                  damping: 16,
+                  mass: 0.9,
+                  delay: 0.18,
+                }}
                 whileHover={{ rotate: 0, scale: 1.02 }}
                 className="absolute bottom-0 left-0 w-[68%] h-[56%] rounded-2xl overflow-hidden border-4 border-white shadow-[0_24px_60px_rgba(23,28,29,0.22)] bg-limestone z-20"
               >
@@ -125,10 +143,17 @@ export default function AboutSection() {
 
               {/* Accent Stone Villa Thumbnail */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.92 }}
+                initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.7, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 220,
+                  damping: 16,
+                  mass: 0.9,
+                  delay: 0.3,
+                }}
+                whileHover={{ scale: 1.04 }}
                 className="hidden sm:block absolute bottom-6 right-2 w-[38%] h-[32%] rounded-xl overflow-hidden border-4 border-white shadow-xl z-30"
               >
                 <Image

@@ -39,6 +39,9 @@ export default function Navbar() {
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 36);
+      if (window.scrollY < 160) {
+        setActiveId("home");
+      }
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -46,14 +49,15 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const sections = NAV_ITEMS.map((item) =>
-      document.getElementById(item.id)
-    ).filter((el): el is HTMLElement => el !== null);
+    const sections = NAV_ITEMS.filter((item) => item.id !== "home")
+      .map((item) => document.getElementById(item.id))
+      .filter((el): el is HTMLElement => el !== null);
 
     if (sections.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (window.scrollY < 160) return;
         for (const entry of entries) {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id);
@@ -69,6 +73,11 @@ export default function Navbar() {
 
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
+    if (href === "#home") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setActiveId("home");
+      return;
+    }
     const target = document.querySelector(href);
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "start" });

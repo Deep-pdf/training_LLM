@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
+import WordPullUp from "@/components/ui/word-pull-up";
 import { FALLBACK_MODEL_METRICS, fetchMetrics } from "@/lib/api";
 import { formatINR } from "@/lib/formatters";
 import type { ModelMetrics } from "@/types/prediction";
@@ -87,11 +88,19 @@ export default function HowItWorksSection() {
               02 / How It Works &amp; Model Performance
             </span>
             <h2 className="font-bebas text-[clamp(3rem,6.5vw,5.5rem)] leading-[0.9] uppercase text-white">
-              From raw{" "}
-              <span className="font-serif-display italic font-normal lowercase text-sage">
-                blueprint
-              </span>{" "}
-              to valuation
+              <WordPullUp
+                duration={0.55}
+                stagger={0.07}
+                segments={[
+                  { text: "From raw" },
+                  {
+                    text: "blueprint",
+                    className:
+                      "font-serif-display italic font-normal lowercase text-sage",
+                  },
+                  { text: "to valuation" },
+                ]}
+              />
             </h2>
           </div>
           <p className="text-sm sm:text-base text-alabaster/70 max-w-md leading-relaxed">
@@ -140,7 +149,11 @@ export default function HowItWorksSection() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
               <h3 className="font-bebas text-3xl sm:text-4xl tracking-wide text-white uppercase">
-                Model Performance Metrics
+                <WordPullUp
+                  duration={0.55}
+                  stagger={0.07}
+                  segments={[{ text: "Model Performance Metrics" }]}
+                />
               </h3>
               <p className="text-sm text-alabaster/65 mt-1">
                 Evaluation metrics saved from original Scikit-learn training (

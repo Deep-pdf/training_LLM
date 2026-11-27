@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Github, Instagram, Mail, Phone } from "lucide-react";
+import WordPullUp from "@/components/ui/word-pull-up";
 import { fetchHealth } from "@/lib/api";
 import type { HealthStatus } from "@/types/prediction";
 
@@ -65,7 +66,14 @@ export default function FooterSection() {
               04 / Contact &amp; Colophon
             </span>
             <h2 className="font-bebas text-[clamp(3.2rem,8.5vw,7rem)] leading-[0.86] uppercase text-white tracking-tight">
-              Made by <span className="text-sage">DEEP</span>
+              <WordPullUp
+                duration={0.55}
+                stagger={0.07}
+                segments={[
+                  { text: "Made by" },
+                  { text: "DEEP", className: "text-sage" },
+                ]}
+              />
             </h2>
           </div>
 

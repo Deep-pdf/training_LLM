@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
+import WordPullUp from "@/components/ui/word-pull-up";
 import { predictHousePrice } from "@/lib/api";
 import { formatINR, formatINRCompact } from "@/lib/formatters";
 import type {
@@ -179,11 +180,19 @@ export default function PredictionSection() {
               03 / Valuation Studio
             </span>
             <h2 className="font-bebas text-[clamp(3rem,6.5vw,5.5rem)] leading-[0.9] uppercase text-charcoal">
-              Enter your{" "}
-              <span className="font-serif-display italic font-normal lowercase text-teal-deep">
-                property
-              </span>{" "}
-              requirements
+              <WordPullUp
+                duration={0.55}
+                stagger={0.07}
+                segments={[
+                  { text: "Enter your" },
+                  {
+                    text: "property",
+                    className:
+                      "font-serif-display italic font-normal lowercase text-teal-deep",
+                  },
+                  { text: "requirements" },
+                ]}
+              />
             </h2>
           </div>
 
